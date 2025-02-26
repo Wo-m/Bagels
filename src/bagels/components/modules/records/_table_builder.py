@@ -94,7 +94,9 @@ class RecordTableBuilder:
     def _build_date_view(self, table: DataTable, records: list) -> None:
         prev_group = None
         for record in records:
-            flow_icon = self._get_flow_icon(len(record.splits) > 0, record.isIncome)
+            flow_icon = self._get_flow_icon(
+                len(record.splits) > 0, record.isIncome, record.amount
+            )
 
             category_string, amount_string, account_string = self._format_record_fields(
                 record, flow_icon
@@ -152,14 +154,28 @@ class RecordTableBuilder:
             if record.splits and self.show_splits:
                 self._add_split_rows(table, record, flow_icon)
 
-    def _get_flow_icon(self, recordHasSplits: bool, is_income: bool) -> str:
+    def _get_flow_icon(
+        self, recordHasSplits: bool, is_income: bool, amount: float
+    ) -> str:
+        if is_income:
+            colour = "green"
+            symbol = CONFIG.symbols.amount_positive
+        else:
+            colour = "red"
+            # negative expense is + symbol (i.e. repayed for an expense)
+            symbol = (
+                CONFIG.symbols.amount_positive
+                if amount < 0
+                else CONFIG.symbols.amount_negative
+            )
+
+        # TODO: handle splits
         if recordHasSplits and not self.show_splits:
             flow_icon_positive = "[green]=[/green]"
             flow_icon_negative = "[red]=[/red]"
+            return flow_icon_positive if is_income else flow_icon_negative
         else:
-            flow_icon_positive = f"[green]{CONFIG.symbols.amount_positive}[/green]"
-            flow_icon_negative = f"[red]{CONFIG.symbols.amount_negative}[/red]"
-        return flow_icon_positive if is_income else flow_icon_negative
+            return f"[{colour}]{symbol}[/{colour}]"
 
     def _format_record_fields(self, record, flow_icon: str) -> tuple[str, str]:
         if record.isTransfer:
@@ -186,7 +202,9 @@ class RecordTableBuilder:
                 )
                 amount_string = f"{flow_icon} {amount_self}"
             else:
-                amount_string = f"{flow_icon} {record.amount}"
+                amount_string = (
+                    f"{flow_icon} {abs(record.amount)}"  # abs for negative expense
+                )
 
             account_string = record.account.name
 

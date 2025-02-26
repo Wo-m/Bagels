@@ -23,7 +23,7 @@ class Record(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     label = Column(String, nullable=False)
-    amount = Column(Float, CheckConstraint("amount > 0"), nullable=False)
+    amount = Column(Float, nullable=False)
     date = Column(DateTime, nullable=False, default=datetime.now)
     accountId = Column(Integer, ForeignKey("account.id"), nullable=False)
     categoryId = Column(Integer, ForeignKey("category.id"), nullable=True)

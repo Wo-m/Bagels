@@ -45,7 +45,6 @@ class RecordForm:
                 title="Amount",
                 key="amount",
                 type="number",
-                min=0,
                 is_required=True,
             ),
             FormField(
