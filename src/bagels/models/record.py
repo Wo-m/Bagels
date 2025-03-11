@@ -22,6 +22,7 @@ class Record(Base):
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    bank_id = Column(String)
     label = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
     date = Column(DateTime, nullable=False, default=datetime.now)
