@@ -14,6 +14,7 @@ class Account(Base):
     deletedAt = Column(DateTime, nullable=True)
 
     id = Column(Integer, primary_key=True, index=True)
+    bankId = Column(String)
     name = Column(String, nullable=False)
     description = Column(String)
     beginningBalance = Column(Float, nullable=False)
